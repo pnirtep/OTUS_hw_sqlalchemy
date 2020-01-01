@@ -1,4 +1,4 @@
-from BlogDBmodels.run import *
+from BlogDBmodels.create_functions import *
 
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -44,7 +44,7 @@ while True:
         for email in session.query(User).filter_by(email=user_email):
             if email:
                 create_post(title, text, user_email)
-                print('Добавлен новый пост: {} с тегами: {}'.format(title, post.tags))
+                print('Добавлен новый пост: {}'.format(title))
                 exit()
 
         response = input('There is no user with this email - create new user? y/n ')
@@ -82,11 +82,12 @@ while True:
         for post in session.query(Post).order_by(Post.id):
             print('\nPost id: {}, title : {}, text: {}, user_email: {}'.format(post.id, post.title, post.text, post.user_email))
         post_id = input('Choose post id which you want to tag: ')
-        tag_name = input('Enter tags for this post, use , to split tag names: ')
-        x = '123'
+        name_tag = input('Enter tags for this post, use , to split tag names: ')
+
         p = session.query(Post).filter_by(id = post_id).first()
-        p.tags.append(tag_name)
-        session.commir()
+        for i in name_tag:
+            p.tags.append(name_tag)
+
 
 
 
