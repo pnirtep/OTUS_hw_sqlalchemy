@@ -82,11 +82,15 @@ while True:
         for post in session.query(Post).order_by(Post.id):
             print('\nPost id: {}, title : {}, text: {}, user_email: {}'.format(post.id, post.title, post.text, post.user_email))
         post_id = input('Choose post id which you want to tag: ')
-        name_tag = input('Enter tags for this post, use , to split tag names: ')
+        name_tag = input('Enter tags for this post, use , to split tag names: ').split(',')
+        for tag in name_tag:
+            new_tag = Tag(tag_name=tag)
+            p = session.query(Post).filter_by(id = post_id).first()
 
-        p = session.query(Post).filter_by(id = post_id).first()
-        for i in name_tag:
-            p.tags.append(name_tag)
+            p.tags.append(new_tag)
+            session.commit()
+
+
 
 
 
@@ -112,4 +116,21 @@ while True:
         email = input('Find posts by user email: ')
         for post in session.query(Post).filter_by(user_email = email):
             print('\nPost id: {}, title : {}, text: {}, user_email: {}'.format(post.id, post.title, post.text, post.user_email))
+
+
+    # Показать посты по выбранному тегу
+    elif response == 'fpt':
+        tag = input('Find posts by tag: ').split(',')
+        for elem in tag:
+            tag_id = session.query(Tag.id).filter(Tag.tag_name==elem)
+
+            for i in tag_id:
+                for j in i:
+                    for post in session.query(Post).join(tags_posts_table).filter_by(tag_id = j):
+                        print('\nPost id: {},\n title : {},\n text: {},\n user_email: {}'.format(post.id, post.title, post.text, post.user_email))
+
+
+
+
+
 

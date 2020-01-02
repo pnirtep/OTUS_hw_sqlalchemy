@@ -26,3 +26,4 @@ def create_tag(tag_name):
     session = Session()
     session.add(tag)
     session.commit()
+    return tag
