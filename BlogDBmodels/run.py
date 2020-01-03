@@ -1,5 +1,6 @@
 from BlogDBmodels.create_functions import *
 
+Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -18,7 +19,7 @@ while True:
     elif response =='au':
         name = input('Enter user nickname: ')
         email = input('Enter user email: ')
-        Base.metadata.create_all(engine)
+        #Base.metadata.create_all(engine)
         #проверка на наличие пользователей(Если пусто - создать первого)
         objects = session.query(User).first()
         if objects is None:
@@ -32,7 +33,7 @@ while True:
                     exit()
 
             create_user(name, email)
-            print('Добавлен новый пользователь')
+            print('New user was added')
 
 
     # Добавить новый пост
@@ -40,11 +41,11 @@ while True:
         title = input('Enter post title: ')
         text = input('Enter post text: ')
         user_email = input('Enter author email: ')
-        Base.metadata.create_all(engine)
+        #Base.metadata.create_all(engine)
         for email in session.query(User).filter_by(email=user_email):
             if email:
                 create_post(title, text, user_email)
-                print('Добавлен новый пост: {}'.format(title))
+                print('New post added: {}'.format(title))
                 exit()
 
         response = input('There is no user with this email - create new user? y/n ')
@@ -59,12 +60,12 @@ while True:
     # Добавить новый тег в базу
     elif response == 'at':
         tag_name = input('Enter new TAG name: ')
-        Base.metadata.create_all(engine)
+        #Base.metadata.create_all(engine)
         # проверка на наличие пользователей(Если пусто - создать первого)
         objects = session.query(Tag).first()
         if objects is None:
             create_tag(tag_name)
-            print('New TAG was added')
+            print('New TAG: {} was added'.format(tag_name))
         else:
             # проверка на существование tag в базе
             for tag_name in session.query(Tag).filter_by(tag_name=tag_name):
@@ -73,7 +74,7 @@ while True:
                     exit()
 
             create_tag(tag_name)
-            print('New TAG was added')
+            print('New TAG: {} was added'.format(tag_name))
 
 
     # Назначаем постам нужные теги
@@ -83,16 +84,32 @@ while True:
             print('\nPost id: {}, title : {}, text: {}, user_email: {}'.format(post.id, post.title, post.text, post.user_email))
         post_id = input('Choose post id which you want to tag: ')
         name_tag = input('Enter tags for this post, use , to split tag names: ').split(',')
+
+
         for tag in name_tag:
+            for tag_name in session.query(Tag).filter_by(tag_name=tag):
+                if tag_name:
+                    print('Warning: TAG already exists!')
+
+                    p = session.query(Post).filter_by(id=post_id).first()
+
+                    p.tags.append(tag_name)
+                    session.commit()
+                else:
+                    new_tag = Tag(tag_name=tag_name)
+                    p = session.query(Post).filter_by(id=post_id).first()
+
+                    p.tags.append(new_tag)
+                    session.commit()
+
+
+
             new_tag = Tag(tag_name=tag)
             p = session.query(Post).filter_by(id = post_id).first()
 
             p.tags.append(new_tag)
             session.commit()
-
-
-
-
+            print('Tag to post was added')
 
 
     #Показать всех пользователей
