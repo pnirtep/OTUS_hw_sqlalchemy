@@ -1,6 +1,7 @@
-from BlogDBmodels.create_functions import create_tag, create_post, create_user
-from BlogDBmodels.models import User, Tag, Post, Base, engine
+from create_functions import create_tag, create_post, create_user, session_add
+from models import User, Tag, Post, Base, engine
 from sqlalchemy.orm import sessionmaker
+import datetime
 
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
@@ -12,7 +13,7 @@ while True:
                      'Show all users(su) | Show all posts(sp) | Show all tags(st)\n'
                      'Find post by User(fpu) | Find posts by Tag(fpt) ')
 
-    if response not in ('au', 'ap', 'at', 'tp', 'su', 'sp', 'st', 'fpu', 'fpt'):
+    if response not in ('au', 'ap', 'at', 'tp', 'su', 'sp', 'st', 'fpu', 'fpt', 'cp'):
         print('Wrong command. Reload app')
         exit()
 
@@ -120,8 +121,8 @@ while True:
     # Показать все посты
     elif response == 'sp':
         for post in session.query(Post).order_by(Post.id):
-            print('\nPost id: {}, title : {}, text: {}, user_email: {}'.format(post.id, post.title, post.text,
-                                                                               post.user_email))
+            print('\nPost id: {}, created_at: {}, title : {}, text: {}, user_email: {} updated_at: {}'.format(post.id, post.created_date, post.title, post.text,
+                                                                               post.user_email, post.on_update))
 
     # Показать все теги
     elif response == 'st':
@@ -149,5 +150,22 @@ while True:
                 for j in i:
                     for post in session.query(Post).join(tags_posts_table).filter_by(tag_id=j):
                         print('\nPost id: {},\n title : {},\n text: {},\n user_email: {}'.format(post.id, post.title,
-                                                                                                 post.text,
-                                                                                                 post.user_email))
+                                                                                                 post.text, post.user_email))
+
+    # Редактируем название и текст поста, обновляем updated_at
+    elif response == 'cp':
+        for post in session.query(Post).order_by(Post.id):
+            print('\nPost id: {}, created_at: {}, title : {}, text: {}, user_email: {} updated_at: {}'.format(post.id, post.created_date, post.title, post.text,
+                                                                               post.user_email, post.updated_at))
+        post_id = input('Choose post ID you want to edit: ')
+
+        post = session.query(Post).filter_by(id = post_id).first()
+        print('You want to edit:\n{}'.format(post))
+        new_title = input('Enter new titile: ')
+        post.title = new_title
+        new_text = input('Enter new text: ')
+        post.text = new_text
+        post.updated_at = datetime.datetime.today()
+        session.commit()
+        print('Done! Check it out:\n{}'.format(post))
+

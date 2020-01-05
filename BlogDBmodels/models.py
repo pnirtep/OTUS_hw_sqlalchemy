@@ -38,14 +38,15 @@ class Post(Base):
     title = Column(String, nullable=False)
     text = Column(String, nullable=False)
     user_email = Column(Integer, ForeignKey('users.email'))
-    #on_update = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
     is_published = Column(Boolean, default=False)
 
     user = relationship("User", back_populates="posts")
     tags = relationship("Tag", secondary=tags_posts_table, back_populates="posts")
 
     def __repr__(self):
-        return "<Post: date = {}, title= {}, text= {}>".format(self.created_date, self.title, self.text)
+        return 'Post id: {}, created_at: {}, title : {}, text: {}, user_email: {} updated_at: {}'.format(self.id, self.created_date, self.title, self.text,
+                                                                               self.user_email, self.on_update)
 
 class Tag(Base):
     __tablename__ = 'tags'
