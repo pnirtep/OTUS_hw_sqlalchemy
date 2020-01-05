@@ -1,29 +1,27 @@
-from BlogDBmodels.models import *
+from BlogDBmodels.models import User, Tag, Post, Base, engine
+from sqlalchemy.orm import sessionmaker
 
 
-def create_user(name, email):
-    Base.metadata.create_all(engine)
-    user = User(nickname=name, email=email)
+def session_add(param):
     Session = sessionmaker(bind=engine)
     session = Session()
-    session.add(user)
+    session.add(param)
     session.commit()
+
+def create_user(name, email):
+    #Base.metadata.create_all(engine)
+    user = User(nickname=name, email=email)
+    session_add(user)
 
 
 def create_post(title, text, user_email):
-    Base.metadata.create_all(engine)
+    #Base.metadata.create_all(engine)
     post = Post(title=title, text=text, user_email=user_email)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    session.add(post)
-    session.commit()
+    session_add(post)
+
 
 
 def create_tag(tag_name):
-    Base.metadata.create_all(engine)
+    #Base.metadata.create_all(engine)
     tag = Tag(tag_name=tag_name)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    session.add(tag)
-    session.commit()
-    return tag
+    session_add(tag)

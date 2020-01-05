@@ -38,6 +38,7 @@ class Post(Base):
     title = Column(String, nullable=False)
     text = Column(String, nullable=False)
     user_email = Column(Integer, ForeignKey('users.email'))
+    #on_update = Column(DateTime, default=datetime.datetime.utcnow)
     is_published = Column(Boolean, default=False)
 
     user = relationship("User", back_populates="posts")

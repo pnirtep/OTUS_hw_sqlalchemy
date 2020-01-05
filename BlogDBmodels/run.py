@@ -1,4 +1,6 @@
-from BlogDBmodels.create_functions import *
+from BlogDBmodels.create_functions import create_tag, create_post, create_user
+from BlogDBmodels.models import User, Tag, Post, Base, engine
+from sqlalchemy.orm import sessionmaker
 
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
